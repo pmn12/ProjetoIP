@@ -1,13 +1,79 @@
-#include <stdio.h>
+/*******************************************************************************************
+*
+*   raylib [core] example - Keyboard input
+*
+*   Example originally created with raylib 1.0, last time updated with raylib 1.0
+*
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
+*
+*   Copyright (c) 2014-2022 Ramon Santamaria (@raysan5)
+*
+********************************************************************************************/
 
-int main(){
+#include "raylib.h"
 
-  printf("Welcome guys");
-  printf("minhapomba");
-  printf("Eae");
-  printf("oiiee");
-  
-  "teste"
-  
-return 0;
+//------------------------------------------------------------------------------------
+// Program main entry point
+//------------------------------------------------------------------------------------
+int main(void)
+{
+    // Initialization
+    //--------------------------------------------------------------------------------------
+    const int screenWidth = 1920;
+    const int screenHeight = 1080;
+    int posicaoAux1 = 0, posicaoAux2 = 0;
+
+    InitWindow(screenWidth, screenHeight, "raylib [core] example - keyboard input");
+    
+    Texture2D texture = LoadTexture("C:\\Users\\paulo\\Downloads\\mapa.png");        // Texture loading
+    Texture2D texture2 = LoadTexture("C:\\Users\\paulo\\Downloads\\personagem_direita.png");
+    Texture2D texture3 = LoadTexture("C:\\Users\\paulo\\Downloads\\personagem_esquerda.png");
+
+    Vector2 ballPosition = { (float)screenWidth/2, (float)screenHeight/2 };
+
+    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+    //--------------------------------------------------------------------------------------
+
+    // Main game loop
+    while (!WindowShouldClose())    // Detect window close button or ESC key
+    {
+        // Update
+        posicaoAux1=ballPosition.x;
+        //----------------------------------------------------------------------------------
+        if (IsKeyDown(KEY_RIGHT)) ballPosition.x += 3.0f;
+        if (IsKeyDown(KEY_LEFT)) ballPosition.x -= 3.0f;
+        if (IsKeyDown(KEY_UP)) ballPosition.y -= 3.0f;
+        if (IsKeyDown(KEY_DOWN)) ballPosition.y += 3.0f;
+        //----------------------------------------------------------------------------------
+        posicaoAux2=ballPosition.x;
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+
+            ClearBackground(RAYWHITE);
+            
+            DrawTexture(texture, screenWidth/2 - texture.width/2, screenHeight/2 - texture.height/2, WHITE);
+
+            //DrawText("move the ball with arrow keys", 10, 10, 20, DARKGRAY);
+            
+            if(posicaoAux1 <= posicaoAux2)
+            DrawTextureV(texture2, ballPosition, WHITE);
+            
+            else if(posicaoAux1 > posicaoAux2)
+            DrawTextureV(texture3, ballPosition, WHITE);
+
+
+            //DrawCircleV(ballPosition, 50, MAROON);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    // De-Initialization
+    //--------------------------------------------------------------------------------------
+    CloseWindow();        // Close window and OpenGL context
+    //--------------------------------------------------------------------------------------
+
+    return 0;
 }
