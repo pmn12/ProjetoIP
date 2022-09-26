@@ -1,0 +1,142 @@
+#include "raylib.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+#define WIDTH 1200 
+#define HEIGHT 800
+
+typedef struct {
+    const int width;
+    const int height;
+    int FPS;
+} Window;
+
+Window window = {
+    .FPS = 60,
+};
+
+typedef struct {
+    Vector2 pos;
+    Vector2 acc;
+    Vector2 vel;
+    int width;
+    int height;
+
+    double accSpeed;
+    int maxVel;
+    double friction;
+    double rotation;
+    double scale;
+
+} Player;
+
+Player player = {
+
+    .pos = {WIDTH/2, HEIGHT/2},
+    .acc = {0, 0},
+    .vel = {0, 0},
+    .width = 50,
+    .height = 50,
+
+    .accSpeed = 0.15,
+    .maxVel = 7,
+    .friction = 0.2,
+    .rotation = 0,
+    .scale = 0.5,
+};
+
+void movePlayer();
+int rectCollide();
+
+int main() {
+
+    InitWindow(WIDTH, HEIGHT, "Window");
+    SetTargetFPS(window.FPS);
+
+    Texture2D playerImg = LoadTexture("Player.png");
+
+    Rectangle playerArea = {player.pos.x, player.pos.y, playerImg.width*player.scale, playerImg.height*player.scale};
+    Rectangle rect1 = {100, 100, 50, 50};
+
+    Camera2D camera = { 0 };
+    camera.target = (Vector2){ player.pos.x + 20.0f, player.pos.y + 20.0f };
+    camera.offset = (Vector2){WIDTH/2.0f, HEIGHT/2.0f };
+    camera.rotation = 0.0f;
+    camera.zoom = 1.0f;
+
+    if (CheckCollisionRecs(playerArea, rect1)) {
+        DrawText("Collided", 5, 5, 25, BLACK);
+    }
+
+   while (!WindowShouldClose()) {    
+    movePlayer();    
+        
+    playerArea = (Rectangle) {    
+        player.pos.x,                
+        player.pos.y,                
+        player.width,     
+        player.height,     
+    };    
+        
+    camera.target = (Vector2){ player.pos.x + 20, player.pos.y + 20 };    
+            
+    BeginDrawing();    
+        ClearBackground(SKYBLUE);    
+         
+        BeginMode2D(camera);    
+        
+        DrawRectangleRec(rect1, RED);    
+        DrawRectangle(player.pos.x, player.pos.y, player.width, player.height, RAYWHITE);    
+    
+        EndMode2D();    
+            
+        if (CheckCollisionRecs(playerArea, rect1))
+            DrawText("Collided", 5, 5, 25, BLACK);     
+    EndDrawing();    
+}
+    UnloadTexture(playerImg);
+
+    CloseWindow();
+
+    return 0;
+}
+
+void movePlayer() {
+    if (IsKeyDown(KEY_RIGHT) && player.vel.x > -player.maxVel) {
+        player.acc.x = -player.accSpeed;
+    } else if (IsKeyDown(KEY_LEFT) && player.vel.x < player.maxVel) {
+        player.acc.x = player.accSpeed;
+    } else if (abs(player.vel.x) > 0.2) {
+        if (player.vel.x < 0) {
+            player.acc.x = player.friction;
+        } else {
+            player.acc.x = -player.friction;
+        }
+    } else {
+        player.vel.x = 0;
+        player.acc.x = 0;
+    }
+    player.vel.x += player.acc.x;
+    player.pos.x += player.vel.x;
+
+    if (IsKeyDown(KEY_DOWN) && player.vel.y > -player.maxVel) {
+        player.acc.y = -player.accSpeed;
+    } else if (IsKeyDown(KEY_UP) && player.vel.x < player.maxVel) {
+        player.acc.y = player.accSpeed;
+    } else if (abs(player.vel.y) > 0.2) {
+        if (player.vel.y < 0) {
+            player.acc.y = player.friction;
+        } else {
+            player.acc.y = -player.friction;
+        }
+    } else {
+        player.vel.y = 0;
+        player.acc.y = 0;
+    }
+    player.vel.y += player.acc.y;
+    player.pos.y += player.vel.y;
+}
+
+int rectCollide(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2) {
+  return x1 + w1 > x2 && x1 < x2 + w2 && y1 + h1 > y2 && y1 < y2 + h2;
+}
