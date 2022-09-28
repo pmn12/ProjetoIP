@@ -26,12 +26,12 @@ int main(void)
     //--------------------------------------------------------------------------------------
     const int screenWidth = 1760;       //define a largura da tela
     const int screenHeight = 1000;      //define a altura da tela
-    int posicaoAuxX1 = 0, posicaoAuxX2 = 0, posicaoAuxY1 = 0, posicaoAuxY2 = 0, flag_d=0, flag_e=0, flag_c=0, flag_b=0;
+    int posicaoAuxX1 = 0, posicaoAuxX2 = 0, posicaoAuxY1 = 0, posicaoAuxY2 = 0, flag_d=0, flag_e=0, flag_c=0, flag_b=0, recuo=11;
     char flag;
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - keyboard input");
     
-    Texture2D texture = LoadTexture("C:\\Users\\CIn\\Downloads\\mario_img\\mapa.png");        // Carrega as texturas a partir de imagens da galeria
+    Texture2D texture  = LoadTexture("C:\\Users\\CIn\\Downloads\\mario_img\\mapa.png");        // Carrega as texturas a partir de imagens da galeria
     Texture2D texture2 = LoadTexture("C:\\Users\\CIn\\Downloads\\mario_img\\mario_direita.png");
     Texture2D texture3 = LoadTexture("C:\\Users\\CIn\\Downloads\\mario_img\\mario_esquerda.png");
     Texture2D texture4 = LoadTexture("C:\\Users\\CIn\\Downloads\\mario_img\\mario_parado.png");
@@ -66,66 +66,74 @@ int main(void)
     
     
         if (personagem.x + texture2.width < (screenWidth/2 + texture.width/2))        //so move pra direita se a posicao x do pers for menor q
-            if (IsKeyDown(KEY_RIGHT)){
+            if (IsKeyDown(KEY_RIGHT)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)){
                 personagem.x += 4.0f;   
                 flag = 'd';
                 flag_d=1;
             }
         
         if (personagem.x > (screenWidth - texture.width)/2)
-            if (IsKeyDown (KEY_LEFT)){ 
+            if (IsKeyDown (KEY_LEFT)|| IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT)){ 
                 personagem.x -= 4.0f;
                 flag = 'e';
                 flag_e=1;
             }
         
         if(personagem.y > (screenHeight - texture.height)/2)                          //so move pra cima se a posicao y do pers for menor q
-            if (IsKeyDown(KEY_UP)){ 
+            if (IsKeyDown(KEY_UP) || IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_UP)){ 
                 personagem.y -= 4.0f; 
                 flag = 'c';
                 flag_c=1;
             }                
         
         if (personagem.y + texture2.height < (screenHeight/2 + texture.height/2))
-            if (IsKeyDown(KEY_DOWN)) {
+            if (IsKeyDown(KEY_DOWN)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
                 personagem.y += 4.0;
                 flag = 'b';
                 flag_b=1;
             }
    
     
-    if(CheckCollisionRecs(mario, cr7)==1){
+    if(CheckCollisionRecs(mario, cr7)){                   // se existir colisao ele entra
         
             if (flag == 'e') {
-                if(flag_b)
-                    personagem.y-=4.0f;
-                else if(flag_c)
-                    personagem.y += 4.0f;
-                personagem.x += 4.0f;
+                if(flag_b)                                //
+                    personagem.y-=recuo;                  //dentro destes if's, dependendo qual botao ele aperta, ele dara uma velocidade inversa
+                if(flag_c)                                //
+                    personagem.y += recuo;
+                if(flag_d)
+                    personagem.x -= recuo;
+                personagem.x += recuo;
             }
                               
             if (flag == 'c') {
                 if(flag_e)
-                    personagem.x += 4.0f;
-                else if(flag_d)
-                    personagem.x -= 4.0f;
-                personagem.y += 4.0f;
+                    personagem.x += recuo;
+                if(flag_d)
+                    personagem.x -= recuo;
+                if(flag_b)
+                    personagem.y -= recuo;
+                personagem.y += recuo;
             }
         
             if (flag == 'b') {
                 if(flag_e)
-                    personagem.x += 4.0f;
-                else if(flag_d)
-                    personagem.x -= 4.0f;
-                personagem.y -= 4.0f;
+                    personagem.x += recuo;
+                if(flag_d)
+                    personagem.x -= recuo;
+                if(flag_c)
+                    personagem.y += recuo;
+                personagem.y -= recuo;
             }
              
             if (flag == 'd') {
                 if(flag_b)
-                    personagem.y-=4.0f;
-                else if(flag_c)
-                    personagem.y += 4.0f;
-                personagem.x -= 4.0f;
+                    personagem.y-=recuo;
+                if(flag_c)
+                    personagem.y += recuo;
+                if(flag_e)
+                    personagem.x += recuo;
+                personagem.x -= recuo;
             }
     }
     flag_b=0;
