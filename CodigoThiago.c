@@ -29,6 +29,7 @@
 typedef struct{
     Vector2 posicao;
     Rectangle rec;
+    Rectangle hitbox;
 } Personagem;
 
 void DesenharPersonagem(Texture2D personagem, Personagem perso, int andando, int posicao) {
@@ -42,24 +43,56 @@ void carregarRetangulos(Rectangle *rec_map,int screenWidth, int screenHeight, Te
     rec_map[0].width = 1781;
     rec_map[0].height = 10;
 
-    rec_map[1].x = (screenWidth / 2 - mapa.width /2) + 17;
+    rec_map[1].x = (screenWidth / 2 - mapa.width /2) + 3;
     rec_map[1].y = (screenHeight /2 - mapa.height / 2) + 180;
     rec_map[1].width = 10;
     rec_map[1].height = 500;
 
      rec_map[2].x = (screenWidth / 2 - mapa.width /2) + 17;
-    rec_map[2].y = (screenHeight /2 - mapa.height / 2) + 170;
+    rec_map[2].y = (screenHeight /2 - mapa.height / 2) + 150;
     rec_map[2].width = 1781;
     rec_map[2].height = 10;
 
-    rec_map[3].x = (screenWidth / 2 - mapa.width /2) + 1781;
+    rec_map[3].x = (screenWidth / 2 - mapa.width /2) + 1801;
     rec_map[3].y = (screenHeight /2 - mapa.height / 2) + 170;
     rec_map[3].width = 10;
     rec_map[3].height = 500;
 
+    rec_map[4].x = (screenWidth / 2 - mapa.width /2) + 17;
+    rec_map[4].y = (screenHeight /2 - mapa.height / 2) + 193;
+    rec_map[4].width = 63;
+    rec_map[4].height = 12;
+
+    rec_map[5].x = (screenWidth / 2 - mapa.width /2) + 70;
+    rec_map[5].y = (screenHeight /2 - mapa.height / 2) + 150;
+    rec_map[5].width = 12;
+    rec_map[5].height = 53;
+
 
     
     
+}
+
+void verificaColisao(int *andando, Rectangle *rec_map, Personagem perso, int posicao) {
+    
+    if(CheckCollisionRecs(rec_map[0], perso.hitbox) == true) {
+        if(posicao == 0) *andando = 0;
+    }
+    if(CheckCollisionRecs(rec_map[1], perso.hitbox) == true) {
+        if(posicao == 1) *andando = 0;
+    }
+    if(CheckCollisionRecs(rec_map[2], perso.hitbox) == true) {
+        if(posicao == 3) *andando = 0;
+    }
+    if(CheckCollisionRecs(rec_map[3], perso.hitbox) == true) {
+        if(posicao == 2) *andando = 0;
+    }
+    if(CheckCollisionRecs(rec_map[4], perso.hitbox) == true) {
+        if(posicao == 3) *andando = 0;
+    }
+    if(CheckCollisionRecs(rec_map[5], perso.hitbox) == true) {
+        if(posicao == 1) *andando = 0;
+    }
 }
 
 
@@ -71,15 +104,15 @@ int main(void)
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 900;
-    const int screenHeight = 600;
+    const int screenWidth = 1809;
+    const int screenHeight = 809;
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
     // Textures:
-    int x = 0, y = 0, andando = 0, posicao = 0;
+    int x = 0, y = 0, andando = 0, posicao = 0, xaux, yaux;
 
     Personagem perso;
     perso.posicao.x = screenWidth / 2;
@@ -92,7 +125,7 @@ int main(void)
     camera.target.y = perso.posicao.y;
     
     camera.rotation = 0.0f;
-    camera.zoom = 1.5;
+    camera.zoom = 1;
 
     
     
@@ -156,30 +189,42 @@ int main(void)
         perso.rec.y = posicao * frameHeight;
         perso.posicao.x = screenWidth / 2 + x;
         perso.posicao.y = screenHeight /2 + y;
+        perso.hitbox.width = frameWidth;
+        perso.hitbox.height = frameHeight;
+        perso.hitbox.x = (screenWidth / 2) + x;
+        perso.hitbox.y = (screenHeight / 2) + y;
+
+        yaux = y;
+        xaux = x;
 
         if(IsKeyDown(KEY_A) == true) {
-            x = x - 2;
-            
+            xaux = xaux - 2;
             andando = 1;
             posicao = 1;
+            verificaColisao(&andando, rec_map, perso, posicao);
+            if(andando == 1) x = xaux;
         }
         else if(IsKeyDown(KEY_D) == true) {
-            x = x + 2;
-            
+            xaux = xaux + 2;
             andando = 1;
             posicao = 2;
+            verificaColisao(&andando, rec_map, perso, posicao);
+            if(andando == 1) x = xaux;
         }
         else if(IsKeyDown(KEY_W) == true) {
-            y = y -2;
-            
+            yaux = yaux -2;
             andando = 1;
             posicao = 3;
+            verificaColisao(&andando, rec_map, perso, posicao);
+            if(andando == 1) y = yaux;
+
         }
         else if(IsKeyDown(KEY_S) == true) {
-            y = y + 2;
-            
+            yaux = yaux + 2;
             andando = 1;
             posicao = 0;
+            verificaColisao(&andando, rec_map, perso, posicao);
+            if(andando == 1) y = yaux;
         }
         else {
             andando = 0;
@@ -200,20 +245,23 @@ int main(void)
         // Draw----------------------------------------
         BeginDrawing();
         ClearBackground(BLACK);
-        BeginMode2D(camera);
+        //BeginMode2D(camera);
             DrawTexture(mapa, screenWidth / 2 - mapa.width /2 ,screenHeight / 2 - mapa.height/2 , RAYWHITE);
             DesenharPersonagem(personagem, perso, andando, posicao);
             DrawText(posx, 200  , 200 , 20, RED);
-            for(int i = 0; i < 4; i++)
-                DrawRectangleRec(rec_map[i], RED);
+            
+                DrawRectangleLinesEx(perso.hitbox, 2, RED);
+                for(int i = 4; i < 6; i++)
+            DrawRectangleRec(rec_map[i], BLUE);
             
             
-        EndMode2D();
+        //EndMode2D();
         EndDrawing();
         //----------------------------------------------------------------------------------
     }
 
     // De-Initialization
+    free(rec_map);
     //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
