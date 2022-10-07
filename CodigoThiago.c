@@ -104,8 +104,8 @@ int main(void)
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 1809;
-    const int screenHeight = 809;
+    const int screenWidth = 900;
+    const int screenHeight = 600;
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
 
@@ -125,7 +125,7 @@ int main(void)
     camera.target.y = perso.posicao.y;
     
     camera.rotation = 0.0f;
-    camera.zoom = 1;
+    camera.zoom = 1.5;
 
     
     
@@ -245,7 +245,7 @@ int main(void)
         // Draw----------------------------------------
         BeginDrawing();
         ClearBackground(BLACK);
-        //BeginMode2D(camera);
+        BeginMode2D(camera);
             DrawTexture(mapa, screenWidth / 2 - mapa.width /2 ,screenHeight / 2 - mapa.height/2 , RAYWHITE);
             DesenharPersonagem(personagem, perso, andando, posicao);
             DrawText(posx, 200  , 200 , 20, RED);
@@ -255,7 +255,7 @@ int main(void)
             DrawRectangleRec(rec_map[i], BLUE);
             
             
-        //EndMode2D();
+        EndMode2D();
         EndDrawing();
         //----------------------------------------------------------------------------------
     }
