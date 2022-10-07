@@ -137,10 +137,6 @@ int main(void)
     int frame = 0;
     float time = 0.0f;
 
-    char posx[20];
-    char posy[20];
-    int mousex;
-    int mousey;
     
 
     Rectangle *rec_map = (Rectangle *) malloc(10 * sizeof(Rectangle));
@@ -167,21 +163,8 @@ int main(void)
         //---------------------------------------------------------------------------------
         
         camera.target.x = perso.posicao.x - screenWidth /3 + 20;
-        camera.target.y = perso.posicao.y - screenHeight / 3 + 20;
-
-        mousex = GetMouseX();
-        mousey = GetMouseY();
-
-        sprintf(posx, "%d", mousex);
-        sprintf(posy, "%d", mousey);
-        strcat(posx, " ");
-        strcat(posx, posy);
-    
-        
-        
-        
-        
-        
+        camera.target.y = perso.posicao.y - screenHeight / 3 + 20;        
+                
 
         perso.rec.height = frameHeight;
         perso.rec.width = frameWidth;
@@ -248,11 +231,6 @@ int main(void)
         BeginMode2D(camera);
             DrawTexture(mapa, screenWidth / 2 - mapa.width /2 ,screenHeight / 2 - mapa.height/2 , RAYWHITE);
             DesenharPersonagem(personagem, perso, andando, posicao);
-            DrawText(posx, 200  , 200 , 20, RED);
-            
-                DrawRectangleLinesEx(perso.hitbox, 2, RED);
-                for(int i = 4; i < 6; i++)
-            DrawRectangleRec(rec_map[i], BLUE);
             
             
         EndMode2D();
