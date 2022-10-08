@@ -39,13 +39,13 @@ void DesenharPersonagem(Texture2D personagem, Personagem perso, int andando, int
 void carregarRetangulos(Rectangle *rec_map,int screenWidth, int screenHeight, Texture2D mapa) {
     
     rec_map[0].x = (screenWidth / 2 - mapa.width /2) + 17;
-    rec_map[0].y = (screenHeight /2 - mapa.height / 2) + 659;
+    rec_map[0].y = (screenHeight /2 - mapa.height / 2) + 655;
     rec_map[0].width = 1781;
     rec_map[0].height = 10;
 
     rec_map[1].x = (screenWidth / 2 - mapa.width /2) + 3;
     rec_map[1].y = (screenHeight /2 - mapa.height / 2) + 180;
-    rec_map[1].width = 10;
+    rec_map[1].width = 20;
     rec_map[1].height = 500;
 
      rec_map[2].x = (screenWidth / 2 - mapa.width /2) + 17;
@@ -53,17 +53,17 @@ void carregarRetangulos(Rectangle *rec_map,int screenWidth, int screenHeight, Te
     rec_map[2].width = 1781;
     rec_map[2].height = 10;
 
-    rec_map[3].x = (screenWidth / 2 - mapa.width /2) + 1801;
+    rec_map[3].x = (screenWidth / 2 - mapa.width /2) + 1791;
     rec_map[3].y = (screenHeight /2 - mapa.height / 2) + 170;
     rec_map[3].width = 10;
     rec_map[3].height = 500;
 
     rec_map[4].x = (screenWidth / 2 - mapa.width /2) + 17;
-    rec_map[4].y = (screenHeight /2 - mapa.height / 2) + 193;
+    rec_map[4].y = (screenHeight /2 - mapa.height / 2) + 203;
     rec_map[4].width = 63;
     rec_map[4].height = 12;
 
-    rec_map[5].x = (screenWidth / 2 - mapa.width /2) + 70;
+    rec_map[5].x = (screenWidth / 2 - mapa.width /2) + 80;
     rec_map[5].y = (screenHeight /2 - mapa.height / 2) + 150;
     rec_map[5].width = 12;
     rec_map[5].height = 53;
@@ -104,8 +104,8 @@ int main(void)
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 900;
-    const int screenHeight = 600;
+    const int screenWidth = 1000;
+    const int screenHeight = 900;
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
 
@@ -138,6 +138,7 @@ int main(void)
     float time = 0.0f;
 
     
+    
 
     Rectangle *rec_map = (Rectangle *) malloc(10 * sizeof(Rectangle));
     carregarRetangulos(rec_map, screenWidth, screenHeight, mapa);
@@ -163,8 +164,14 @@ int main(void)
         //---------------------------------------------------------------------------------
         
         camera.target.x = perso.posicao.x - screenWidth /3 + 20;
-        camera.target.y = perso.posicao.y - screenHeight / 3 + 20;        
-                
+        camera.target.y = perso.posicao.y - screenHeight / 3 + 20;
+
+      
+        
+        
+        
+        
+        
 
         perso.rec.height = frameHeight;
         perso.rec.width = frameWidth;
@@ -172,10 +179,10 @@ int main(void)
         perso.rec.y = posicao * frameHeight;
         perso.posicao.x = screenWidth / 2 + x;
         perso.posicao.y = screenHeight /2 + y;
-        perso.hitbox.width = frameWidth;
-        perso.hitbox.height = frameHeight;
-        perso.hitbox.x = (screenWidth / 2) + x;
-        perso.hitbox.y = (screenHeight / 2) + y;
+        perso.hitbox.width = frameWidth / 2;
+        perso.hitbox.height = frameHeight / 2 + 10;
+        perso.hitbox.x = (screenWidth / 2 + frameWidth /4) + x;
+        perso.hitbox.y = (screenHeight / 2 + frameHeight / 4) + y;
 
         yaux = y;
         xaux = x;
@@ -231,6 +238,9 @@ int main(void)
         BeginMode2D(camera);
             DrawTexture(mapa, screenWidth / 2 - mapa.width /2 ,screenHeight / 2 - mapa.height/2 , RAYWHITE);
             DesenharPersonagem(personagem, perso, andando, posicao);
+
+            
+          
             
             
         EndMode2D();
