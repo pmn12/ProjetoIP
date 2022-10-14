@@ -124,6 +124,7 @@ int main(){
             x=0;
             y=0;
             initPerso(&perso, screenWidth, screenHeight, frameWidthIdle, frameHeightIdle, frameWidthRun, frameHeightRun, FWattack, FHattack);
+            cristal = initCristal(cristal, mapa);
             Recvilao = initVilao(Recvilao, mapa);
         }
 
