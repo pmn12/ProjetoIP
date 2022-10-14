@@ -31,6 +31,7 @@ typedef struct{
     Rectangle rec;
     Rectangle recRun;
     Rectangle hitbox;
+    Rectangle recAttack;
 } Personagem;
 
 
@@ -120,7 +121,7 @@ void updateCamera(Camera2D *camera, Personagem *perso, int screenWidth, int scre
     }
 }
 
-void initPerso(Personagem *perso, int screenWidth, int screenHeight, float frameWidthIdle, float frameHeightIdle, float frameWidthRun, float frameHeightRun) {
+void initPerso(Personagem *perso, int screenWidth, int screenHeight, float frameWidthIdle, float frameHeightIdle, float frameWidthRun, float frameHeightRun, float FWattack, float FHattack) {
     perso -> posicao.x = screenWidth/2;
     perso -> posicao.y = screenHeight/2;
     perso -> rec.x = 0;
@@ -133,6 +134,8 @@ void initPerso(Personagem *perso, int screenWidth, int screenHeight, float frame
     perso -> recRun.height = frameHeightRun;
     perso -> hitbox.width = frameWidthRun / 4;
     perso -> hitbox.height = frameHeightRun / 4;
+    perso -> recAttack.width = FWattack;
+    perso -> recAttack.height = FHattack;
 }
 
 void updatePerso(Personagem *perso, int screenWidth, int screenHeight, float frameWidthIdle, float frameHeightIdle, float frameWidthRun, float frameHeightRun, int *frame, int *frameIdle, float *time, int *x, int *y, Rectangle *rec_map, int *andando, int *i) {
@@ -143,6 +146,7 @@ void updatePerso(Personagem *perso, int screenWidth, int screenHeight, float fra
         perso -> posicao.y = screenHeight/2 + *y;
         perso -> hitbox.x = (screenWidth / 2 + frameWidthRun / 4 + frameWidthRun / 8) + *x;
         perso -> hitbox.y = (screenHeight / 2 + frameHeightRun / 4 + frameWidthRun / 8) + *y;
+        
         if(*i == 1) {
             perso -> rec.width = frameWidthIdle;
             perso -> recRun.width = frameWidthRun;
@@ -213,12 +217,69 @@ void updatePerso(Personagem *perso, int screenWidth, int screenHeight, float fra
          }   
 }
 
-void desenharPerso(Texture2D persoIdle, Texture2D persoRun, Personagem perso, int andando) {
-    if(andando == 0) {
-        DrawTextureRec(persoIdle, perso.rec, perso.posicao, RAYWHITE);
+void desenharPerso(Texture2D persoIdle, Texture2D persoRun, Personagem *perso, int andando, int *attacking, float FWattack, float *timeAttack, int *attackMode, Texture2D Attack0, Texture2D Attack1, Texture2D Attack2, float FHattack, int *frameAttack) {
+    if(*attacking == 0) {
+        if(andando == 0) {
+            DrawTextureRec(persoIdle, perso -> rec, perso -> posicao, RAYWHITE);
+        }
+        else {
+            DrawTextureRec(persoRun, perso -> recRun, perso -> posicao, RAYWHITE);
+        }
+
     }
     else {
-        DrawTextureRec(persoRun, perso.recRun, perso.posicao, RAYWHITE);
+        perso -> recAttack.x = (*frameAttack) * FWattack;
+        perso -> recAttack.y = FHattack;
+
+        if(*attackMode == 0) {
+            
+            DrawTextureRec(Attack0, perso -> recAttack, perso -> posicao, RAYWHITE);
+        
+            *timeAttack += GetFrameTime();
+            if(*timeAttack >= 0.05f) {
+                (*frameAttack) += 1;
+                *timeAttack = 0.0f;
+                    
+            }
+            
+            if(*frameAttack == 7) {
+                *attacking = 0;
+                *frameAttack = 0;
+                *attackMode = 1;
+            }
+        }
+        else if(*attackMode == 1) {
+            DrawTextureRec(Attack1, perso -> recAttack, perso -> posicao, RAYWHITE);
+        
+            *timeAttack += GetFrameTime();
+            if(*timeAttack >= 0.05f) {
+                (*frameAttack) += 1;
+                *timeAttack = 0.0f;
+                    
+            }
+            
+            if(*frameAttack == 7) {
+                *attacking = 0;
+                *frameAttack = 0;
+                *attackMode = 2;
+            }
+        }
+        else {
+            DrawTextureRec(Attack2, perso -> recAttack, perso -> posicao, RAYWHITE);
+        
+            *timeAttack += GetFrameTime();
+            if(*timeAttack >= 0.05f) {
+                (*frameAttack) += 1;
+                *timeAttack = 0.0f;
+                    
+            }
+            
+            if(*frameAttack == 7) {
+                *attacking = 0;
+                *frameAttack = 0;
+                *attackMode = 0;
+            }
+        }
     }
 }
 
@@ -250,13 +311,20 @@ int main(void)
     Texture2D mapa = LoadTexture("./Assets/MapaDefinitivo.png");
     Texture2D persoIdle = LoadTexture("./Assets/Idle.png");
     Texture2D persoRun = LoadTexture("./Assets/Run.png");
+    Texture2D attack0 = LoadTexture("./Assets/Attack1.png");
+    Texture2D attack1 = LoadTexture("./Assets/Attack2.png");
+    Texture2D attack2 = LoadTexture("./Assets/Attack3.png");
     float frameWidthIdle = persoIdle.width / 10.0;
     float frameHeightIdle = persoIdle.height;
     float frameWidthRun = persoRun.width / 8.0;
     float frameHeightRun = persoRun.height;
+    float FWattack = attack0.width / 7.0;
+    float FHattack = (float) attack0.height;
+    float timeAttack = 0.0f;
     int frameIdle = 0;
     int frame = 0;
     float time = 0.0f;
+    int frameAttack = 0;
 
     
 
@@ -264,9 +332,9 @@ int main(void)
     carregarRetangulos(rec_map, screenWidth, screenHeight, mapa);
 
     Personagem perso;
-    initPerso(&perso, screenWidth, screenHeight, frameWidthIdle, frameHeightIdle, frameWidthRun, frameHeightRun);
+    initPerso(&perso, screenWidth, screenHeight, frameWidthIdle, frameHeightIdle, frameWidthRun, frameHeightRun, FWattack, FHattack);
     
-    
+    int attackMode = 0, attacking = 0;
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
@@ -278,22 +346,29 @@ int main(void)
             //camera.target.y = perso.posicao.y - (screenHeight /2) / 1.5;
         //updateCamera(&camera, &perso, screenWidth, screenHeight, mapa);
         //updatePerso(&perso, &x, &y, &frame, &time, frameWidth, frameHeight, &andando, &posicao, screenWidth, screenHeight, rec_map);
+        if(IsKeyPressed(KEY_Z) == true) {
+            attacking = 1;
+        }
        updatePerso(&perso, screenWidth, screenHeight, frameWidthIdle, frameHeightIdle, frameWidthRun, frameHeightRun, &frame, &frameIdle, &time, &x, &y, rec_map, &andando, &i);
        updateCamera(&camera, &perso, screenWidth, screenHeight, mapa);
        if(i == 1) {
             perso.rec.width = frameWidthIdle;
             perso.recRun.width = frameWidthRun;
+            perso.recAttack.width = FWattack;
         }
         else {
             perso.rec.width = -frameWidthIdle;
             perso.recRun.width = -frameWidthRun;
+            perso.recAttack.width = -FWattack;
         }
+
+        
         // Draw----------------------------------------
         BeginDrawing();
         ClearBackground(BLACK);
         BeginMode2D(camera);
            DrawTexture(mapa, screenWidth / 2 - mapa.width /2 ,screenHeight / 2 - mapa.height/2 , RAYWHITE);
-            desenharPerso(persoIdle, persoRun, perso, andando);
+            desenharPerso(persoIdle, persoRun, &perso, andando, &attacking, FWattack, &timeAttack, &attackMode, attack0, attack1, attack2, FHattack, &frameAttack);
             
             
           
