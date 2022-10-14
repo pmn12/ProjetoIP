@@ -12,17 +12,14 @@ typedef struct{
     Rectangle rec;
     Rectangle recRun;
     Rectangle hitbox;
-    Rectangle recAtac;
-    float frame_width;
-    float timer;
-    int frame;
-    int max_frames;
+    Rectangle recAttack;
     int max_vida;
-    int vida_atual;
+    float vida_atual;
     bool ativo;
+    bool atacando;
 } Personagem;
 
-void initPerso(Personagem *perso, int screenWidth, int screenHeight, float frameWidthIdle, float frameHeightIdle, float frameWidthRun, float frameHeightRun, float frameWidthAtac, float frameHeightAtac) {
+void initPerso(Personagem *perso, int screenWidth, int screenHeight, float frameWidthIdle, float frameHeightIdle, float frameWidthRun, float frameHeightRun, float FWattack, float FHattack) {
     perso -> posicao.x = screenWidth/2;
     perso -> posicao.y = screenHeight/2;
     perso -> rec.x = 0;
@@ -35,10 +32,11 @@ void initPerso(Personagem *perso, int screenWidth, int screenHeight, float frame
     perso -> recRun.height = frameHeightRun;
     perso -> hitbox.width = frameWidthRun / 4;
     perso -> hitbox.height = frameHeightRun / 4;
-    perso -> recAtac.x = 0;
-    perso -> recAtac.y = 0;
-    perso -> recAtac.width = frameWidthAtac;
-    perso -> recAtac.height = frameHeightAtac;
+    perso -> recAttack.width = FWattack;
+    perso -> recAttack.height = FHattack;
+    perso -> max_vida = 4.0;
+    perso -> ativo = 1;
+    perso -> vida_atual = 68.0;
 }
 
 void verificaColisao(int *andando, Rectangle *rec_map, Personagem perso, int posicao) {
@@ -64,7 +62,7 @@ void verificaColisao(int *andando, Rectangle *rec_map, Personagem perso, int pos
 
 }
 
-void updatePerso(Personagem *perso, int screenWidth, int screenHeight, float frameWidthIdle, float frameHeightIdle, float frameWidthRun, float frameHeightRun, float frameHeightAtac, float frameWidthAtac, int *frame, int *frameIdle, int *frameAtac, float *time, int *x, int *y, Rectangle *rec_map, int *andando, int *i) {
+void updatePerso(Personagem *perso, int screenWidth, int screenHeight, float frameWidthIdle, float frameHeightIdle, float frameWidthRun, float frameHeightRun, int *frame, int *frameIdle, float *time, int *x, int *y, Rectangle *rec_map, int *andando, int *i) {
     int xaux, yaux, posicao = 0;
         xaux = *x;
         yaux = *y;
@@ -72,24 +70,19 @@ void updatePerso(Personagem *perso, int screenWidth, int screenHeight, float fra
         perso -> posicao.y = screenHeight/2 + *y;
         perso -> hitbox.x = (screenWidth / 2 + frameWidthRun / 4 + frameWidthRun / 8) + *x;
         perso -> hitbox.y = (screenHeight / 2 + frameHeightRun / 4 + frameWidthRun / 8) + *y;
-
-        //Inverter a posição da animação da direita para esquerda
+        
         if(*i == 1) {
             perso -> rec.width = frameWidthIdle;
             perso -> recRun.width = frameWidthRun;
-            perso -> recAtac.width = frameWidthAtac;
         }
         else {
             perso -> rec.width = -frameWidthIdle;
             perso -> recRun.width = -frameWidthRun;
-            perso -> recAtac.width = -frameWidthAtac;
         }
         perso -> rec.x = (*frameIdle) * frameWidthIdle;
         perso -> recRun.x = (*frame) * frameWidthRun;
-        perso -> recAtac.x = (*frameAtac) * frameWidthAtac;
-
         if(IsKeyDown(KEY_A) == true) {
-            xaux = xaux - 4;
+            xaux = xaux - 3;
             *andando = 1;
             posicao = 1;
             *i = -1;
@@ -98,7 +91,7 @@ void updatePerso(Personagem *perso, int screenWidth, int screenHeight, float fra
             if(*andando == 1) *x = xaux;
         }
         else if(IsKeyDown(KEY_D) == true) {
-            xaux = xaux + 4;
+            xaux = xaux + 3;
             *andando = 1;
             posicao = 2;
             *i = 1;
@@ -107,7 +100,7 @@ void updatePerso(Personagem *perso, int screenWidth, int screenHeight, float fra
             if(*andando == 1) *x = xaux;
         }
         else if(IsKeyDown(KEY_W) == true) {
-            yaux = yaux - 4;
+            yaux = yaux -3;
             *andando = 1;
             posicao = 3;
             verificaColisao(andando, rec_map, *perso, posicao);
@@ -116,7 +109,7 @@ void updatePerso(Personagem *perso, int screenWidth, int screenHeight, float fra
 
         }
         else if(IsKeyDown(KEY_S) == true) {
-            yaux = yaux + 4;
+            yaux = yaux + 3;
             *andando = 1;
             posicao = 0;
             verificaColisao(andando, rec_map, *perso, posicao);
@@ -126,17 +119,8 @@ void updatePerso(Personagem *perso, int screenWidth, int screenHeight, float fra
         else *andando = 0;
 
         
-        if(IsKeyDown(KEY_Z)){
 
-            *time += GetFrameTime();
-            if(*time >= 0.1f) {
-                (*frameAtac)++;
-                *time = 0.0f;
-            }
-            *frameAtac = *frameAtac % 7;
-         } 
-
-        else if(*andando == 1) {
+        if(*andando == 1) {
             *time += GetFrameTime();
             if(*time >= 0.1f) {
                 (*frame)++;
@@ -144,12 +128,9 @@ void updatePerso(Personagem *perso, int screenWidth, int screenHeight, float fra
             }
             *frame = *frame % 8;
             *frameIdle = 0;
-            *frameAtac = 0;
         }
-        
-        else if(*andando == 0){
+        else {
             *frame = 0;
-            *frameAtac = 0;
 
             *time += GetFrameTime();
             if(*time >= 0.1f) {
@@ -157,17 +138,9 @@ void updatePerso(Personagem *perso, int screenWidth, int screenHeight, float fra
                 *time = 0.0f;
             }
             *frameIdle = *frameIdle % 10;
-         }  
+         }   
 
-      
-      if(*i == 1) {
-            perso->rec.width = frameWidthIdle;
-            perso->recRun.width = frameWidthRun;
-        }
-        else {
-            perso->rec.width = -frameWidthIdle;
-            perso->recRun.width = -frameWidthRun;
-        }
+         
 }
 
 void initCamera(Camera2D *camera) {
@@ -201,12 +174,4 @@ void updateCamera(Camera2D *camera, Personagem *perso, int screenWidth, int scre
     }
 }
 
-void ataquePersonagem(Personagem perso){
-    
-    if(IsKeyDown(KEY_Z)){
-
-    }
-
-
-}
 #endif

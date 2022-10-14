@@ -50,6 +50,22 @@ int abrirMenu(){
 
     }
 
+void abrirGameOver(){
+
+    const int screen_weight = 1600;
+    const int screen_height = 800;
+    Texture2D GameOver = LoadTexture("C:\\Users\\luant\\Desktop\\ProjetoPasta\\.vscode\\Assets\\GameOver.png");
+    SetTargetFPS(60);
+
+    while(IsKeyUp(KEY_ESCAPE)){
+        BeginDrawing();
+        DrawTexture(GameOver, screen_weight/2 - GameOver.width/2, screen_height/2 - GameOver.height/2, WHITE);
+        EndDrawing();
+    }
+
+    CloseWindow();
+}
+
 #endif
 
 
