@@ -67,8 +67,20 @@ int main(){
 
     int attackMode = 0, attacking = 0;
     int morreu = 0;
+    
     Sound Tema = LoadSound("C:\\Users\\paulo\\Downloads\\Christopher Larkin - Hollow Knight (Original Soundtrack) - 25 Radiance.wav");
     SetSoundVolume(Tema, 0.18);
+    
+    Sound *efeitos = (Sound*) malloc(4*sizeof(Sound));
+    
+    efeitos[0] = LoadSound("C:\\Users\\paulo\\Downloads\\sapons\\07_human_atk_sword_1.wav");
+    efeitos[1] = LoadSound("C:\\Users\\paulo\\Downloads\\sapons\\07_human_atk_sword_2.wav");
+    efeitos[2] = LoadSound("C:\\Users\\paulo\\Downloads\\sapons\\07_human_atk_sword_3.wav");
+    efeitos[3] = LoadSound("C:\\Users\\paulo\\Downloads\\sapons\\21_orc_damage_3.wav");
+    
+    for(int p=0; p<4;p++){
+        SetSoundVolume(efeitos[p],0.24);
+    }
 
     while (!WindowShouldClose() && morreu == 0 && t==0)    
     {
@@ -115,12 +127,12 @@ int main(){
             Recvilao = initVilao(Recvilao, mapa);
         }
 
-        desenharPerso(persoIdle, persoRun, &perso, andando, &attacking, FWattack, &timeAttack, &attackMode, attack0, attack1, attack2, FHattack, &frameAttack);
+        desenharPerso(persoIdle, persoRun, &perso, andando, &attacking, FWattack, &timeAttack, &attackMode, attack0, attack1, attack2, FHattack, &frameAttack, efeitos);
 
         DrawTexture(torreimg, 750, 340, WHITE);            
         desenharvilao(time2, vilao1, vilao2, Recvilao);
         //desenharCristal(cristal, vilao1);
-        Recvilao = inimigoAcertado(perso, Recvilao, i, &morreu, &Tema);
+        Recvilao = inimigoAcertado(perso, Recvilao, i, &morreu, &Tema, efeitos);
         DrawText(TextFormat("Tempo -> %i", time2), screenWidth/2, screenHeight/2 - 100, 40, RED);
         EndDrawing();
     }
@@ -128,6 +140,7 @@ int main(){
     free(rec_map);
     free(Recvilao);
     free(cristal);
+    free(efeitos);
     
     StopSound(Tema);
     

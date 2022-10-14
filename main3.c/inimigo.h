@@ -43,7 +43,7 @@ Enemy* initVilao(Enemy* Recvilao, Texture2D mapa){
 
     return Recvilao;
 }
-Enemy* inimigoAcertado(Personagem perso, Enemy* inimigo, int i, int* morreu, Sound* tema){
+Enemy* inimigoAcertado(Personagem perso, Enemy* inimigo, int i, int* morreu, Sound* tema, Sound* efeitos){
     
     if(i == -1){
         perso.hitbox_ataque.x = perso.posicao.x + 20;
@@ -70,6 +70,7 @@ Enemy* inimigoAcertado(Personagem perso, Enemy* inimigo, int i, int* morreu, Sou
     if(CheckCollisionRecs(perso.hitbox_ataque, inimigo[j].hitbox_inimigo) && IsKeyPressed(KEY_Z)){
         DrawText("HIT!", perso.posicao.x + 50, perso.posicao.y - 25, 20, RED);
         inimigo[j].vida_inimigo -= 10;
+        PlaySound(efeitos[3]);
 
         if(inimigo[j].vida_inimigo <= 0){
             

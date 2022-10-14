@@ -8,7 +8,7 @@
 #include "player.h"
 #include "inimigo.h"
 
-void desenharPerso(Texture2D persoIdle, Texture2D persoRun, Personagem *perso, int andando, int *attacking, float FWattack, float *timeAttack, int *attackMode, Texture2D Attack0, Texture2D Attack1, Texture2D Attack2, float FHattack, int *frameAttack) {
+void desenharPerso(Texture2D persoIdle, Texture2D persoRun, Personagem *perso, int andando, int *attacking, float FWattack, float *timeAttack, int *attackMode, Texture2D Attack0, Texture2D Attack1, Texture2D Attack2, float FHattack, int *frameAttack, Sound *efeitos) {
     if(*attacking == 0) {
         if(andando == 0) {
             DrawTextureRec(persoIdle, perso -> rec, perso -> posicao, RAYWHITE);
@@ -23,7 +23,9 @@ void desenharPerso(Texture2D persoIdle, Texture2D persoRun, Personagem *perso, i
         perso -> recAttack.y = FHattack;
 
         if(*attackMode == 0) {
-            
+            if(IsSoundPlaying(efeitos[0])==0){
+                PlaySound(efeitos[0]);
+            }
             DrawTextureRec(Attack0, perso -> recAttack, perso -> posicao, RAYWHITE);
         
             *timeAttack += GetFrameTime();
@@ -40,6 +42,9 @@ void desenharPerso(Texture2D persoIdle, Texture2D persoRun, Personagem *perso, i
             }
         }
         else if(*attackMode == 1) {
+            if(IsSoundPlaying(efeitos[1])==0){
+                PlaySound(efeitos[1]);
+            }
             DrawTextureRec(Attack1, perso -> recAttack, perso -> posicao, RAYWHITE);
         
             *timeAttack += GetFrameTime();
@@ -56,6 +61,9 @@ void desenharPerso(Texture2D persoIdle, Texture2D persoRun, Personagem *perso, i
             }
         }
         else {
+            if(IsSoundPlaying(efeitos[2])==0){
+                PlaySound(efeitos[2]);
+            }
             DrawTextureRec(Attack2, perso -> recAttack, perso -> posicao, RAYWHITE);
         
             *timeAttack += GetFrameTime();
