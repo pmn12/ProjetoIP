@@ -144,7 +144,7 @@ void personagemAcertado(Personagem* perso, Enemy* inimigo, int *morreu, Sound *T
         }
     }
     for(int k=0;k<2;k++){
-    DrawRectangle(cristal[k].hitbox_cristal.x + 48, cristal[k].hitbox_cristal.y + 26, cristal[k].vida_cristal , 13 , YELLOW);
+    DrawRectangle(cristal[k].hitbox_cristal.x + 26, cristal[k].hitbox_cristal.y + 26, cristal[k].vida_cristal , 13 , YELLOW);
     }
 }
 

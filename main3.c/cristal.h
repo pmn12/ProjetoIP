@@ -27,14 +27,14 @@ Cristal* initCristal(Cristal *cristal, Texture2D mapa){
         
     }
     
-    cristal[0].hitbox_cristal.x = (screenWidth / 2 - mapa.width /2) + 1480;
+    cristal[0].hitbox_cristal.x = (screenWidth / 2 - mapa.width /2) + 1500;
     cristal[0].hitbox_cristal.y = 330;
-    cristal[0].hitbox_cristal.height = 100;
-    cristal[0].hitbox_cristal.width = 100;
+    cristal[0].hitbox_cristal.height = 120;
+    cristal[0].hitbox_cristal.width = 120;
     cristal[1].hitbox_cristal.x = (screenWidth / 2 - mapa.width /2) + 140;
     cristal[1].hitbox_cristal.y = 330;
-    cristal[1].hitbox_cristal.height = 100;
-    cristal[1].hitbox_cristal.width = 100;
+    cristal[1].hitbox_cristal.height = 120;
+    cristal[1].hitbox_cristal.width = 120;
     
     return cristal;
 }
